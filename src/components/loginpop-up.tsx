@@ -30,6 +30,7 @@ function AuthDialog() {
     email: '',
     password: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +43,7 @@ function AuthDialog() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
     if (isLogin) {
       // Handle sign in
@@ -60,29 +62,35 @@ function AuthDialog() {
     } else {
       // Handle sign up
       try {
-        const response = await axios.post('/api/signup', {
-         formData
-        });
-        console.log(response);
+        const response = await axios.post('/api/signup', formData);
         
-     
-        if (response) {
+        if (response.status === 200 || response.status === 201) {
           toast.success('Account created successfully! Please sign in.');
           setIsLogin(true);
+          // Clear form
+          setFormData({
+            username: '',
+            email: '',
+            password: ''
+          });
         } else {
-          
-          toast.error( 'Registration failed');
+          toast.error('Registration failed');
         }
-      } catch (error) {
-        console.log(error);
-        
-        toast.error('An error occurred during registration');
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.message || 'Registration failed');
+        } else {
+          toast.error('An error occurred during registration');
+        }
       }
     }
+    setIsLoading(false);
   };
 
   return (
-    <Dialog>
+    
+      <div className='z-50'>
+        <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">{isLogin ? 'Sign In' : 'Sign Up'}</Button>
       </DialogTrigger>
@@ -93,6 +101,7 @@ function AuthDialog() {
             {isLogin ? 'Enter your credentials to access your account.' : 'Fill in your details to create a new account.'}
           </DialogDescription>
         </DialogHeader>
+    
         
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
@@ -136,8 +145,8 @@ function AuthDialog() {
           </div>
           
           <div className="flex flex-col items-center gap-2">
-            <Button type="submit" className="w-full">
-              {isLogin ? 'Sign In' : 'Sign Up'}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Processing...' : isLogin ? 'Sign In' : 'Sign Up'}
             </Button>
             
             <button 
@@ -153,6 +162,8 @@ function AuthDialog() {
         </form>
       </DialogContent>
     </Dialog>
+      </div>
+   
   );
 }
 

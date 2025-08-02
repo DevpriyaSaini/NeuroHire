@@ -1,13 +1,14 @@
-"use client"
-import Loginpage from '@/components/loginpop-up'
-import React from 'react'
+import { NavbarDemo } from "@/components/navbar"
 
-function page() {
+
+
+export default function Home() {
   return (
-    <div>
-      <Loginpage/>
+    <div className="min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors">
+    
+      <main>
+        <NavbarDemo/>
+      </main>
     </div>
   )
 }
-
-export default page
