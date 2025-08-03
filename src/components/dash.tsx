@@ -1,5 +1,6 @@
 "use client"
 import { useSession } from 'next-auth/react'
+import Link from 'next/link';
 import React from 'react'
 
 function Dash() {
@@ -10,7 +11,7 @@ function Dash() {
   }
   
   return (
-    <div className="w-full min-h-screen bg-gray-50 dark:bg-neutral-900 p-4 md:p-8">
+    <div className="w-full min-h-screen bg-gray-50 dark:bg-neutral-900 p-4 md:p-8 ">
       {/* Welcome Section */}
       <section className="mb-8">
         <div className="rounded-lg border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
@@ -51,9 +52,9 @@ function Dash() {
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 Create AI interviews and schedule with the candidate
               </p>
-              <button className="w-full max-w-xs px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300">
+              <Link href="/dashboard/create-interview-form" className="w-full max-w-xs px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300">
                 Get Started
-              </button>
+              </Link >
             </div>
           </div>
 
@@ -120,7 +121,7 @@ function Dash() {
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
-        <span>Create New</span>
+        <Link href="/dashboard/create-interview-form">Create New</Link>
       </button>
     </div>
   </div>
