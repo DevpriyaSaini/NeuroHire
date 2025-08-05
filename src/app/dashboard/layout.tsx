@@ -7,10 +7,8 @@ export default function dashLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" >
-      <body
-       
-      >
+    <html lang="en" suppressHydrationWarning >
+      <body>
             {children}
       
       </body>
