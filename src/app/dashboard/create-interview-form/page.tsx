@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import AIgenque from "../AI-genrated-question/page";
+import axios from "axios";
 
 interface InterviewForm {
   jobPosition: string;
@@ -56,6 +57,18 @@ function Formpage() {
       return;
     }
     setShowQuestions(true);
+
+    async function handleformdata() {
+      try {
+        const res=await axios.post("/api/form",{
+          formData
+
+        })
+      } catch (error) {
+        
+      }
+      
+    }
   };
 
   return (

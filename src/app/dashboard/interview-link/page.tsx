@@ -1,11 +1,14 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import { CheckCircle, Copy, Clock, Calendar, Mail, MessageSquare, Slack } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import Linkpage from './[interviewId]/page';
 
-function InterviewPage({interviewId}:any) {
+function InterviewPage({interviewId,formData}:any) {
   const interviewLink = `http://localhost:3000/dashboard/interview-link/${interviewId}`;
+  const[linkpage,setShowlinkpage]=useState(false)
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(interviewLink);
@@ -13,7 +16,10 @@ function InterviewPage({interviewId}:any) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+   <>
+   {linkpage?
+    <Linkpage formData={formData} interviewId={interviewId}/>:
+     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-8">
         {/* Header Section */}
         <div className="flex items-start mb-8">
@@ -91,7 +97,10 @@ function InterviewPage({interviewId}:any) {
           </Link>
         </div>
       </div>
+      <Button onClick={()=>setShowlinkpage(true)}>join interview</Button>
     </div>
+   }</>
+   
   );
 }
 

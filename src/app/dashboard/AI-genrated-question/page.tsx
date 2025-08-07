@@ -136,7 +136,7 @@ function AIgenque({ formData }: { formData: any }) {
             }
            
            </div>:
-           <InterviewPage interviewId={interviewId} />
+           <InterviewPage interviewId={interviewId} formData={formData}/>
            }
         </div>
     );
