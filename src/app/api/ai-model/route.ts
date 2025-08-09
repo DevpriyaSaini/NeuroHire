@@ -23,11 +23,11 @@ export async function POST(req: Request) {
 
         const openai = new OpenAI({
             baseURL: 'https://openrouter.ai/api/v1',
-            apiKey: process.env.OPENROUTER_API_KEY,
+            apiKey: process.env.OPENROUTER_API_KEY ||"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",
         });
 
         const completion = await openai.chat.completions.create({
-            model: 'google/gemini-2.0-flash-exp:free',
+            model: 'anthropic/claude-3-haiku',
             messages: [
                 {
                     role: 'user',

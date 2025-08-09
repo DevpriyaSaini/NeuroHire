@@ -21,7 +21,7 @@ import OpenAI from 'openai';
 
     const openai = new OpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: "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",
+      apiKey:process.env.OPENROUTER_API_KEY||"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",
     });
 
     const completion = await openai.chat.completions.create({

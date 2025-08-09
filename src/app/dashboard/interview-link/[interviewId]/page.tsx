@@ -70,7 +70,7 @@ function Linkpage({ params }: PageProps) {
 
   React.useEffect(() => {
     if (!vapiRef.current) {
-      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY || "");
+      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY || "21a39db0-4e25-4efc-83c2-d8bf43151758");
     }
 
     const vapi = vapiRef.current;

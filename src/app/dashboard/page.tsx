@@ -6,7 +6,11 @@ import React from 'react'
 function page() {
   return (
 
-    <SidebarDemo/>
+   <div className='flex gap-1'>
+     <SidebarDemo/>
+     
+    <Dash />
+   </div>
   
 
   )

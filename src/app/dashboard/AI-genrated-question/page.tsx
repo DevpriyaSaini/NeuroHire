@@ -67,6 +67,8 @@ function AIgenque() {
 
     try {
       const { data } = await axios.post("/api/ai-model", formData);
+      console.log(data);
+      
       if (!data || data.length === 0) {
         toast.info("Using default questions as fallback");
         setQuestions(defaultQuestions);

@@ -121,9 +121,9 @@ export function SidebarDemo() {
       </SidebarBody>
     </Sidebar>
   </div>
-    <div className={`flex-1 overflow-auto transition-all duration-300 ${open ? 'ml-72' : 'ml-12'}`}>
+    {/* <div className={`flex-1 overflow-auto transition-all duration-300 ${open ? 'ml-72' : 'ml-12'}`}>
           <Dash/>
-    </div>
+    </div> */}
       
 
      
