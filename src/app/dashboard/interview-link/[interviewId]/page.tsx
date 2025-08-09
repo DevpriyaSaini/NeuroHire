@@ -1,15 +1,53 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Vapi from "@vapi-ai/web";
 import { Mic, Phone, PhoneCall } from "lucide-react";
 import axios from "axios";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 interface FormData {
-  username: string;
+  email: string;
   type: string;
 }
 
-function Linkpage({ formData, interviewId }: { formData: FormData; interviewId: string }) {
+interface PageProps {
+  params: {
+    interviewId: string;
+  };
+}
+
+function Linkpage(  { params }: PageProps) {
+  const {data}=useSession();
+   const username = data?.user?.username;
+  const[formData,setFormData]=useState<FormData>(
+   { email:"",
+    type:"",}
+  )
+  const { interviewId } = params;
+  
+
+ async function fetchFormData() {
+    if (!interviewId) return;
+    try {
+      const response = await axios.get("/api/form", {
+        params: { interviewId },
+      });
+      
+      setFormData(response.data?.data);
+      
+    } catch (error) {
+      console.error("Error fetching form data:", error);
+      toast.error("Failed to load interview details");
+    }
+  }
+
+  useEffect(() => {
+    fetchFormData();
+  },[])
+
+// fetchFormData()
+
   const vapiRef = React.useRef<Vapi | null>(null);
   
   const listenersRef = React.useRef<{
@@ -64,15 +102,13 @@ function Linkpage({ formData, interviewId }: { formData: FormData; interviewId: 
         console.error("No questions found.");
         return;
       }
-
       const questionList = questionsArray
-        .map((item: any) => item?.question)
+        .map((item) => item?.question)
         .filter(Boolean)
         .join(" ");
 
-      // Create assistant configuration with proper typing
       const assistantConfig = {
-        firstMessage: `Hi ${formData.username}, ready for your ${formData.type} interview?`,
+        firstMessage: `Hi ${username}, ready for your ${formData.type} interview?`,
         model: {
           provider: "openai" as const,
           model: "gpt-4" as const,
@@ -81,7 +117,7 @@ function Linkpage({ formData, interviewId }: { formData: FormData; interviewId: 
               role: "system" as const,
               content: `You are an AI voice assistant conducting interviews.
                 Your job is to ask candidates provided interview questions, assess their responses.
-                Begin with: "Hi ${formData.username}, how are you? Ready for your interview on ${formData.type}?"
+                Begin with: "Hi ${username}, how are you? Ready for your interview on ${formData.type}?"
                 Ask one question at a time: ${questionList}
                 Keep the conversation natural and engaging.`
             }
@@ -125,5 +161,4 @@ function Linkpage({ formData, interviewId }: { formData: FormData; interviewId: 
     </div>
   );
 }
-
 export default Linkpage;

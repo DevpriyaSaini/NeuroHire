@@ -1,61 +1,77 @@
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
 import formDatamodel from "@/model/formData";
-import { getToken } from "next-auth/jwt";
-import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/options";
+import { Connectiondb } from "@/lib/dbconnect";
 
-export interface FormData{
- jobPosition: string;
-  jobDescription: string;
-  duration: string;
-  type: string;
-}
+export async function POST(request: Request) {
+  await Connectiondb();
 
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-export async function POST(request:NextRequest) {
-    const {formData}=await request.json();
-    const{jobPosition,type,duration,jobDescription} = formData;
-    if(!jobPosition||!type||!duration||!jobDescription){
-        return NextResponse.json({
-            message:"all field are required"
-        },{status:400})
+    const body = await request.json();
+    const formData = body.formData;
+
+    console.log("Received formData:", JSON.stringify(formData));
+
+    const { jobPosition, jobDescription, duration, type, interviewId } = formData;
+
+    if (!jobPosition || !jobDescription || !type || !interviewId) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     try {
-        const res=await formDatamodel.create({
-            jobDescription,
-            jobPosition,
-            duration,
-            type
-        })
+      const newForm = await formDatamodel.create({
+        email: session.user.email,
+        ...formData,
+      });
 
-        if(res.success){
-            return NextResponse.json({message:"formdata saved sucessfully"},{status:200})
-        }
-        else{
-            return NextResponse.json({
-            message:"failed to upload form data"
-        },{status:400})
-        }
-    } catch (error) {
-        console.log(error);
-        
-        return NextResponse.json({
-            message:"internal server error"
-        },{status:500})
+      return NextResponse.json({ success: true, interviewId: newForm.interviewId }, { status: 200 });
+    } catch (mongooseError: any) {
+      console.error("Mongoose Error:", mongooseError);
+      return NextResponse.json({ error: mongooseError.message }, { status: 500 });
     }
+  } catch (error: any) {
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
-export async function GET(req:NextRequest){
-    const data=await getToken({req});
-    console.log(data);
-    try {
-        const res=await formDatamodel.findOne({email:data?.email});
-        console.log("res",res);
-        return NextResponse.json({message:"formdata saved sucessfully"},{status:200})
-    } catch (error) {
-         return NextResponse.json({
-            message:"internal server error to get form data"
-        },{status:500})
-    }
-    
 
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const interviewId = searchParams.get("interviewId");
+
+    if (!interviewId) {
+      return NextResponse.json(
+        { error: "interviewId is required" },
+        { status: 400 }
+      );
+    }
+
+    const formData = await formDatamodel.findOne({ interviewId });
+    if (!formData) {
+      return NextResponse.json(
+        { error: "Interview not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { data: formData },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error("API Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

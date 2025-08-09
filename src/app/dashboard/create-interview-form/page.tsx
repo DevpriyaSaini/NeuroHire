@@ -12,8 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import AIgenque from "../AI-genrated-question/page";
 import axios from "axios";
+import { toast } from "sonner";
+import { Connectiondb } from "@/lib/dbconnect";
 
 interface InterviewForm {
   jobPosition: string;
@@ -27,10 +28,10 @@ function Formpage() {
   const [formData, setFormData] = useState<InterviewForm>({
     jobPosition: "",
     jobDescription: "",
-    duration: "",
+    duration: "30 min", // Default value
     type: "",
   });
-  const [showQuestions, setShowQuestions] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const interviewTypes = [
     { title: "Technical", value: "technical" },
@@ -39,6 +40,40 @@ function Formpage() {
     { title: "Problem-solving", value: "problem-solving" },
     { title: "Leadership", value: "leadership" },
   ];
+
+  async function handleSubmit() {
+    
+    // Validate required fields
+    if (!formData.jobPosition || !formData.jobDescription || !formData.type) {
+      toast.error("Please fill all required fields (marked with *)");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Generate interview ID (or use your existing logic)
+      const interviewId = crypto.randomUUID();
+
+      console.log("formData: " + formData)
+
+      const response = await axios.post("/api/form", {
+        formData: {
+          ...formData,
+          interviewId,
+        },
+      });
+
+      if (response.status === 200) {
+        toast.success("Interview setup complete!");
+        router.push(`/dashboard/AI-genrated-question?interviewId=${interviewId}`);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("Failed to save interview details");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -49,26 +84,6 @@ function Formpage() {
 
   const handleTypeSelect = (type: string) => {
     setFormData((prev) => ({ ...prev, type }));
-  };
-
-  const handleGenerateQuestions = () => {
-    if (!formData.jobPosition || !formData.jobDescription || !formData.duration|| !formData.type) {
-      alert("Please fill in all required fields");
-      return;
-    }
-    setShowQuestions(true);
-
-    async function handleformdata() {
-      try {
-        const res=await axios.post("/api/form",{
-          formData
-
-        })
-      } catch (error) {
-        
-      }
-      
-    }
   };
 
   return (
@@ -92,123 +107,117 @@ function Formpage() {
           </div>
 
           {/* Form Content */}
-          <div className="p-6 sm:p-8 space-y-3">
-            {!showQuestions ? (
-              <>
-                {/* Job Position */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Job position
-                    <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <Input
-                    name="jobPosition"
-                    value={formData.jobPosition}
-                    onChange={handleInputChange}
-                    placeholder="e.g. Frontend Developer"
-                    className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                  />
-                </div>
+          <div className="p-6 sm:p-8 space-y-6">
+            {/* Job Position */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Job position <span className="text-red-500">*</span>
+              </label>
+              <Input
+                name="jobPosition"
+                value={formData.jobPosition}
+                onChange={handleInputChange}
+                placeholder="e.g. Frontend Developer"
+                className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                required
+              />
+            </div>
 
-                {/* Job Description */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Job description
-                    <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <Textarea
-                    name="jobDescription"
-                    value={formData.jobDescription}
-                    onChange={handleInputChange}
-                    placeholder="Describe the role, responsibilities, and required skills..."
-                    className="mt-1 min-h-[100px] dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
-                  />
-                </div>
+            {/* Job Description */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Job description <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                name="jobDescription"
+                value={formData.jobDescription}
+                onChange={handleInputChange}
+                placeholder="Describe the role, responsibilities, and required skills..."
+                className="mt-1 min-h-[120px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                required
+              />
+            </div>
 
-                {/* Interview Duration */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-100">
-                    Interview duration
-                  </label>
-                  <Select
-                    value={formData.duration}
-                    onValueChange={(value) =>
-                      setFormData((prev) => ({ ...prev, duration: value }))
-                    }
+            {/* Interview Duration */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Interview duration
+              </label>
+              <Select
+                value={formData.duration}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, duration: value }))
+                }
+              >
+                <SelectTrigger className="w-full sm:w-[200px] dark:bg-gray-700 dark:border-gray-600">
+                  <SelectValue placeholder="Select duration" />
+                </SelectTrigger>
+                <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
+                  {[5, 15, 30, 45, 60].map((minutes) => (
+                    <SelectItem
+                      key={minutes}
+                      value={`${minutes} min`}
+                      className="dark:hover:bg-gray-600"
+                    >
+                      {minutes} minutes
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Interview Type */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Interview focus areas <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {interviewTypes.map((type) => (
+                  <button
+                    key={type.value}
+                    type="button"
+                    onClick={() => handleTypeSelect(type.value)}
+                    className={`p-3 rounded-lg border-2 transition-all ${
+                      formData.type === type.value
+                        ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/30"
+                        : "border-gray-200 hover:border-blue-300 dark:border-gray-600 dark:hover:border-blue-500"
+                    }`}
                   >
-                    <SelectTrigger className="w-full sm:w-[200px] dark:bg-gray-600 dark:border-gray-600 dark:text-white">
-                      <SelectValue placeholder="Select duration" />
-                    </SelectTrigger>
-                    <SelectContent className="dark:bg-gray-700 dark:border-gray-600">
-                      {[5, 15, 20, 30, 45, 60].map((minutes) => (
-                        <SelectItem
-                          key={minutes}
-                          value={`${minutes} min`}
-                          className="dark:hover:bg-gray-600"
-                        >
-                          {minutes} minutes
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div className="flex flex-col items-center">
+                      <span className="text-2xl mb-1">
+                        {type.value === "technical" ? "💻" : 
+                         type.value === "behavioral" ? "🧠" :
+                         type.value === "experience" ? "📅" :
+                         type.value === "problem-solving" ? "🧩" : "👥"}
+                      </span>
+                      <span className="font-medium text-sm">{type.title}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                {/* Interview Types */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Interview focus areas
-                    <span className="text-red-500 ml-1">*</span>
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                    {interviewTypes.map((type) => (
-                      <div
-                        key={type.value}
-                        onClick={() => handleTypeSelect(type.value)}
-                        className={`relative p-2 rounded-lg border-2 cursor-pointer transition-all
-                          ${
-                            formData.type === type.value
-                              ? "border-blue-500 dark:border-blue-400 bg-blue-100 dark:bg-blue-900/70"
-                              : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500"
-                          }`}
-                      >
-                        <div className="flex flex-col items-center text-center">
-                          <span className="text-2xl mb-2">
-                            {type.value === "technical"
-                              ? "💻"
-                              : type.value === "behavioral"
-                              ? "🧠"
-                              : type.value === "experience"
-                              ? "📅"
-                              : type.value === "problem-solving"
-                              ? "🧩"
-                              : "👥"}
-                          </span>
-                          <span className="font-medium text-gray-800 dark:text-gray-200">
-                            {type.title}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Generate Button */}
-                <div className="pt-6 flex justify-start">
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto px-8 py-6 text-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-700 dark:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 shadow-lg hover:shadow-xl transition-all"
-                    onClick={handleGenerateQuestions}
-                  >
+            {/* Submit Button */}
+            <div className="pt-4">
+              <Button
+                size="lg"
+                className="w-full py-6 text-lg font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
+                onClick={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <span className="animate-spin">🌀</span>
+                    Processing...
+                  </span>
+                ) : (
+                  <>
                     Generate Questions
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <AIgenque formData={formData} />
-              </>
-            )}
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

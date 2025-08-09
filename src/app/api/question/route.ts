@@ -42,6 +42,8 @@ export async function POST(request: NextRequest) {
     );
     
     if (invalidQuestions.length > 0) {
+      console.log("no questions");
+      
       return NextResponse.json(
         { 
           success: false, 
@@ -71,6 +73,8 @@ export async function POST(request: NextRequest) {
     
     // Handle Mongoose validation errors
     if (error.name === 'ValidationError') {
+      console.log(error);
+      
       return NextResponse.json(
         { 
           success: false, 

@@ -1,146 +1,167 @@
 "use client";
-import { Button } from '@/components/ui/button';
-import axios from 'axios';
-import { Loader2 } from 'lucide-react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import InterviewPage from '../interview-link/page';
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import InterviewPage from "../interview-link/page";
 
+interface InterviewForm {
+  jobPosition: string;
+  jobDescription: string;
+  duration: string;
+  type: string;
+}
 
-function AIgenque({ formData }: { formData: any }) {
-    const router=useRouter();
-    const {data}=useSession();
-    const [questions, setQuestions] = useState<any[]>([]);
-    const [loading, setLoading] = useState(false);
-    const[simloading,setSimloading]=useState(false)
-    const[showlink,setshowlink]=useState(false);
-    const [error, setError] = useState<string | null>(null);
-   const[interviewId,setinterviewId]=useState("")
- const username=data?.user.username;
- console.log(username);
+interface Question {
+  question: string;
+  type: string;
+}
 
-    async function random() {
+function AIgenque() {
+  const router = useRouter();
+  const { data } = useSession();
+  const searchParams = useSearchParams();
+
+  const username = data?.user?.username;
+  const interviewId = searchParams.get("interviewId");
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [simloading, setSimloading] = useState(false);
+  const [showlink, setShowlink] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<InterviewForm | null>(null);
+
+  const defaultQuestions: Question[] = [
+    { question: "Tell me about yourself.", type: "Technical" },
+    { question: "What are your strengths and weaknesses?", type: "Technical" },
+    { question: "Why do you want this job?", type: "Technical" },
+  ];
+
+  // Fetch form data
+  async function fetchFormData() {
+    if (!interviewId) return;
     try {
-      const res=await fetch("https://www.uuidtools.com/api/generate/v4/count/1");
-      const data=await res.json();
-     setinterviewId(data);
+      const response = await axios.get("/api/form", {
+        params: { interviewId },
+      });
+      setFormData(response.data?.data || response.data); // fallback
     } catch (error) {
-      console.log(error);
-      
+      console.error("Error fetching form data:", error);
+      toast.error("Failed to load interview details");
     }
   }
-  useEffect(()=>{
-   random();
-  },[]);
 
-  useEffect(()=>{
-    console.log(interviewId);
-  },[interviewId])
-  
- 
-    async function questionhandle() {
-        setSimloading(true)
-        setError(null);
-
-        const questionsToSave = questions.length > 0 
-            ? questions 
-            : await generateQuestionList();
-
-        if (!questionsToSave || questionsToSave.length === 0) {
-            toast.error("No questions to save");
-            return;
-        }
-
-        try {
-            if(!questions||!username){
-                toast("all fields are required")
-            }
-            const res = await axios.post("/api/question", {
-  username,
-  interviewId: interviewId[0], // Make sure this is the string, not array
-  questions: questions.map(q => ({
-    question: q.question,  // Change 'question' to 'text' to match schema
-    type: q.type
-  }))
-});;
-        if (res.data.success) {
-            toast.success("Questions saved successfully");
-            setshowlink(true);
-        } else {
-            throw new Error(res.data.message || "Failed to save");
-        }
-
-        } catch (error) {
-            setError("Failed to generate questions");
-            toast.error("Failed to generate interview questions");
-           
-        }
-        
+  // Generate questions using AI
+  const generateQuestions = async () => {
+    if (!formData?.jobPosition || !formData?.jobDescription) {
+      toast.error("Job position and description are required");
+      return;
     }
-    
-    const generateQuestionList = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            
-            const { data } = await axios.post("/api/ai-model", formData);
-           
-            
-            setQuestions(data);
-        } catch (error) {
-            console.error("Error generating questions:", error);
-            setError("Failed to generate questions");
-            toast.error("Failed to generate interview questions");
-        } finally {
-            setLoading(false);
-        }
-    };
-   
-    useEffect(() => {
-        if (formData?.jobPosition && formData?.jobDescription) {
-            generateQuestionList();
-           
-        }
-    }, [formData]);
-     console.log("data",questions);
 
-    return (
-        <div className="space-y-4">
-            {loading && (
-                <div className="flex items-center gap-2">
-                    <Loader2 className="animate-spin" />
-                    <h2>Generating Interview Questions</h2>
-                </div>
-            )}
-            
-            {error && (
-                <div className="text-red-500">{error}</div>
-            )}
-            
-            {!showlink?
-           <div>
-             <div className="space-y-2">
-                {questions.map((q, i) => (
-                    <div key={i} className="p-4 border rounded-lg dark:border-gray-700">
-                        <h3 className="font-medium">{q.question}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            Type: {q.type}
-                        </p>
-                    </div>
-                ))}
-            </div>
-            {simloading?<Loader2/>:
-               <Button onClick={questionhandle}>Save and next</Button>
-            }
-           
-           </div>:
-           <InterviewPage interviewId={interviewId} formData={formData}/>
-           }
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data } = await axios.post("/api/ai-model", formData);
+      if (!data || data.length === 0) {
+        toast.info("Using default questions as fallback");
+        setQuestions(defaultQuestions);
+      } else {
+        setQuestions(data);
+      }
+    } catch (error) {
+      console.error("Error generating questions:", error);
+      toast.error("AI failed. Using default questions.");
+      setQuestions(defaultQuestions);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Save questions
+  async function saveQuestions() {
+    if (!questions.length || !username || !interviewId) {
+      toast.error("Missing required data");
+      return;
+    }
+
+    setSimloading(true);
+
+    try {
+      const res = await axios.post("/api/question", {
+        username,
+        interviewId,
+        questions: questions.map((q) => ({
+          question: q.question,
+          type: q.type,
+        })),
+      });
+
+      if (res.data.success) {
+        toast.success("Questions saved successfully");
+        setShowlink(true);
+      } else {
+        throw new Error(res.data.message || "Failed to save questions");
+      }
+    } catch (error) {
+      console.error("Error saving questions:", error);
+      toast.error("Failed to save questions");
+    } finally {
+      setSimloading(false);
+    }
+  }
+
+  // Load form data and generate questions
+  useEffect(() => {
+    if (interviewId) {
+      fetchFormData();
+    }
+  }, [interviewId]);
+
+  useEffect(() => {
+    if (formData) {
+      generateQuestions();
+    }
+  }, [formData]);
+
+  return (
+    <div className="space-y-4">
+      {loading && (
+        <div className="flex items-center gap-2">
+          <Loader2 className="animate-spin" />
+          <h2>Generating Interview Questions</h2>
         </div>
-    );
+      )}
+
+      {error && <div className="text-red-500">{error}</div>}
+
+      {!showlink ? (
+        <div>
+          <div className="space-y-2">
+            {questions.map((q, i) => (
+              <div key={i} className="p-4 border rounded-lg dark:border-gray-700">
+                <h3 className="font-medium">{q.question}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Type: {q.type}
+                </p>
+              </div>
+            ))}
+          </div>
+          {simloading ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <Button onClick={saveQuestions}>Save and next</Button>
+          )}
+        </div>
+      ) : (
+        <InterviewPage interviewId={interviewId} formData={formData} />
+      )}
+    </div>
+  );
 }
 
 export default AIgenque;
-
