@@ -46,12 +46,12 @@ export function SidebarDemo() {
   const links = [
     {
       label: "Dashboard",
-      href: "#",
+      href: "/dashboard",
       icon: <IconDashboard className="h-5 w-5 shrink-0" />,
     },
     {
       label: "Profile",
-      href: "#",
+      href: "/",
       icon: <IconUserBolt className="h-5 w-5 shrink-0" />,
     },
     {
@@ -104,11 +104,11 @@ export function SidebarDemo() {
         <div className="border-t border-neutral-200 px-4 py-4 dark:border-neutral-700">
           <SidebarLink
             link={{
-              label: open ? "Manu Arora" : "",
+              label: open ? "Devpriya Saini" : "",
               href: "#",
               icon: (
                 <img
-                  src="https://assets.aceternity.com/manu.png"
+                  src="https://imgs.search.brave.com/bp2Ql2VvSlzRPbC9lOoqhctFp0Claipwq-gCTbckZ4E/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9waXhs/ci5jb20vaW1hZ2Vz/L2dlbmVyYXRvci9w/aG90by1nZW5lcmF0/b3Iud2VicA"
                   className="h-8 w-8 shrink-0 rounded-full object-cover"
                   alt="User avatar"
                 />
@@ -121,9 +121,7 @@ export function SidebarDemo() {
       </SidebarBody>
     </Sidebar>
   </div>
-    {/* <div className={`flex-1 overflow-auto transition-all duration-300 ${open ? 'ml-72' : 'ml-12'}`}>
-          <Dash/>
-    </div> */}
+
       
 
      
@@ -138,9 +136,9 @@ const Logo = () => {
       animate={{ opacity: 1, x: 0 }}
       className="flex items-center gap-2"
     >
-      <div className="h-6 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+      <img className="h-15 w-15 shrink-0 rounded-full object-cover"src="https://imgs.search.brave.com/bp2Ql2VvSlzRPbC9lOoqhctFp0Claipwq-gCTbckZ4E/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9waXhs/ci5jb20vaW1hZ2Vz/L2dlbmVyYXRvci9w/aG90by1nZW5lcmF0/b3Iud2VicA" alt="logo" />
       <span className="text-lg font-semibold text-neutral-800 dark:text-white tracking-tight">
-        AcetLabs
+        Neuro-Hire
       </span>
     </motion.div>
   );

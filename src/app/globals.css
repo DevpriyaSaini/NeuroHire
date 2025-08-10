@@ -43,6 +43,30 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Smooth transitions for dark mode */
+html {
+  scroll-behavior: smooth;
+  color-scheme: light dark;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #555;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

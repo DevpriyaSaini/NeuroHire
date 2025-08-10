@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, createContext, useContext } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 
@@ -80,7 +80,7 @@ export function DesktopSidebar({
   return (
     <motion.div
       className={cn(
-        "h-full px-4 py-4 hidden md:flex flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] flex-none",
+        "h-full px-4 py-4 hidden md:flex flex-col bg-white dark:bg-gray-800 w-[300px] flex-none border-r border-gray-200 dark:border-gray-700",
         className
       )}
       {...props}
@@ -102,10 +102,10 @@ export function MobileSidebar({
   return (
     <div className={cn("md:hidden", className)} {...props}>
       <div
-        className="h-10 flex items-center justify-between px-4 bg-neutral-100 dark:bg-neutral-800"
+        className="h-10 flex items-center justify-between px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
       >
         <IconMenu2
-          className="text-neutral-800 dark:text-neutral-200"
+          className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
           onClick={() => setOpen(!open)}
         />
       </div>
@@ -118,12 +118,12 @@ export function MobileSidebar({
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className={cn(
-              "fixed inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+              "fixed inset-0 bg-white dark:bg-gray-800 p-10 z-[100] flex flex-col justify-between",
               className
             )}
           >
             <div
-              className="absolute top-10 right-10 text-neutral-800 dark:text-neutral-200"
+              className="absolute top-10 right-10 text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
               onClick={() => setOpen(false)}
             >
               <IconX />
@@ -148,16 +148,21 @@ export const SidebarLink = ({
   return (
     <a
       href={link.href}
-      className={cn("flex items-center gap-2 py-2 group/sidebar", className)}
+      className={cn(
+        "flex items-center gap-2 py-2 px-3 rounded-lg group/sidebar hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+        className
+      )}
       {...props}
     >
-      {link.icon}
+      <span className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-blue-600 dark:group-hover/sidebar:text-blue-400">
+        {link.icon}
+      </span>
       <motion.span
         animate={{
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm transition-all duration-150 whitespace-pre inline-block"
+        className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-blue-600 dark:group-hover/sidebar:text-blue-400 text-sm transition-all duration-150 whitespace-pre inline-block"
       >
         {link.label}
       </motion.span>

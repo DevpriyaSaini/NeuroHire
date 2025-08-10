@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import InterviewPage from "../interview-link/page";
+import { SidebarDemo } from "@/components/sidebar";
 
 interface InterviewForm {
   jobPosition: string;
@@ -131,38 +132,76 @@ function AIgenque() {
   }, [formData]);
 
   return (
-    <div className="space-y-4">
+   <div className="flex h-screen w-full overflow-hidden">
+       {/* Sidebar - fixed width */}
+       <div className="h-full flex-shrink-0">
+         <SidebarDemo />
+       </div>
+       
+       {/* Main content - flexible width */}
+       <div className="flex-1 overflow-auto bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-10 ">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Loading State */}
       {loading && (
-        <div className="flex items-center gap-2">
-          <Loader2 className="animate-spin" />
-          <h2>Generating Interview Questions</h2>
+        <div className="flex items-center justify-center gap-3 p-6 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
+          <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+          <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
+            Generating Interview Questions...
+          </h2>
         </div>
       )}
 
-      {error && <div className="text-red-500">{error}</div>}
+      {/* Error State */}
+      {error && (
+        <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300">
+          {error}
+        </div>
+      )}
+      <h1 className="dark:text-white text-2xl font-bold ml-5 max-md:mt-2">AI-Genrated-Questions</h1>
 
+      {/* Questions List */}
       {!showlink ? (
-        <div>
-          <div className="space-y-2">
+        <div className="space-y-6">
+          <div className="space-y-4">
             {questions.map((q, i) => (
-              <div key={i} className="p-4 border rounded-lg dark:border-gray-700">
-                <h3 className="font-medium">{q.question}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Type: {q.type}
-                </p>
+              <div 
+                key={i} 
+                className="p-5 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                  {q.question}
+                </h3>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">
+                    {q.type}
+                  </span>
+                </div>
               </div>
             ))}
           </div>
-          {simloading ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Button onClick={saveQuestions}>Save and next</Button>
-          )}
+
+          {/* Save Button */}
+          <div className="pt-4">
+            {simloading ? (
+              <div className="flex justify-center">
+                <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+              </div>
+            ) : (
+              <Button 
+                onClick={saveQuestions}
+                className="w-full md:w-auto px-6 py-3 text-base font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg transition-all"
+              >
+                Save and Continue →
+              </Button>
+            )}
+          </div>
         </div>
       ) : (
         <InterviewPage interviewId={interviewId} formData={formData} />
       )}
     </div>
+  </div>
+</div>
   );
 }
 

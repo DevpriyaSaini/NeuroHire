@@ -11,7 +11,7 @@ function Dash() {
   }
   
   return (
-    <div className="w-full min-h-screen bg-gray-50 dark:bg-neutral-900 p-4 md:p-8 z-500 ">
+    <div className=" md:w-[80vw] min-h-screen bg-gray-50 dark:bg-neutral-900 p-4 md:p-8 z-500 ml-auto max-md:mt-10">
       {/* Welcome Section */}
       <section className="mb-8">
         <div className="rounded-lg border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-700 dark:bg-neutral-800">
