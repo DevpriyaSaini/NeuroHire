@@ -68,13 +68,13 @@ function Dash() {
                   className="w-16 h-16 object-contain"
                 />
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">View Analytics</h3>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Create Room</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                Track interview performance and candidate metrics
+                Create live interviews and schedule with the candidate
               </p>
-              <button className="w-full max-w-xs px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-300">
-                View Dashboard
-              </button>
+              <Link href="/dashboard/room" className="w-full max-w-xs px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors duration-300">
+                Create Room
+              </Link>
             </div>
           </div>
 
