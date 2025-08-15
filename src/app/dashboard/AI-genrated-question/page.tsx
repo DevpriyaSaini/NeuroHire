@@ -146,7 +146,7 @@ function AIgenque() {
         <div className="flex items-center justify-center gap-3 p-6 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
           <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
           <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
-            Generating Interview Questions...
+            Generating Interview Questions....
           </h2>
         </div>
       )}
