@@ -234,15 +234,16 @@ export const NavbarLogo = () => {
   return (
     <a
       href="#"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      className=" rounded-full relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src="https://assets.aceternity.com/logo-dark.png"
+        src="https://imgs.search.brave.com/bp2Ql2VvSlzRPbC9lOoqhctFp0Claipwq-gCTbckZ4E/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9waXhs/ci5jb20vaW1hZ2Vz/L2dlbmVyYXRvci9w/aG90by1nZW5lcmF0/b3Iud2VicA"
         alt="logo"
-        width={30}
-        height={30}
+        width={100}
+        height={100}
+        className="h-15 w-15 rounded-full object-cover"
       />
-      <span className="font-medium text-black dark:text-white">Startup</span>
+      <span className="  font-medium text-black dark:text-white">Neuro-Hire</span>
     </a>
   );
 };

@@ -57,7 +57,7 @@ function AuthDialog() {
         toast.error('Invalid credentials');
       } else {
         toast.success('Logged in successfully');
-        router.refresh();
+        router.push('/dashboard');
       }
     } else {
       // Handle sign up
@@ -92,7 +92,7 @@ function AuthDialog() {
       <div className='z-50'>
         <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">{isLogin ? 'Sign In' : 'Sign Up'}</Button>
+        <Button variant="outline">Start Now</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
