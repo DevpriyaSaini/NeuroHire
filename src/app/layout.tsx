@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Suspense>
         <AuthProvider>
           <ThemeProvider
             attribute="data-theme"
@@ -41,6 +43,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </AuthProvider>
+        </Suspense>
       </body>
     </html>
   );

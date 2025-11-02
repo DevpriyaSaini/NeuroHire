@@ -13,9 +13,9 @@ interface FormData {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     interviewId: string;
-  };
+  }>;
 }
 
 interface ConversationMessage {
@@ -38,7 +38,7 @@ interface FeedbackData {
   };
 }
 
-function Linkpage({ params }: PageProps) {
+ async function Linkpage({ params }: PageProps) {
   const { data } = useSession();
   const username = data?.user?.username;
   const [formData, setFormData] = useState<FormData>({ email: "", type: "" });
@@ -48,7 +48,7 @@ function Linkpage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
 
-  const { interviewId } = params;
+  const { interviewId } = await params;
 
   async function fetchFormData() {
     if (!interviewId) return;

@@ -3,13 +3,13 @@ import { useParams } from 'next/navigation'
 import React, { useEffect, useRef } from 'react'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     roomId: string;
-  };
+  }>;
 }
 
-export default function Page({ params }: PageProps) {
-  const { roomId } = params;
+export default async function Page({ params }: PageProps) {
+  const { roomId } = await params;
   const videoContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
