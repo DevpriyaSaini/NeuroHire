@@ -10,41 +10,45 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-import Loginpage from '@/components/loginpop-up' // Renamed to be more clear
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageToggle from "@/components/LanguageToggle";
+import { useLanguage } from "@/lib/i18n";
 
 export function NavbarDemo() {
+  const { t } = useLanguage();
   const navItems = [
     {
-      name: "Features",
+      name: t("nav_features"),
       link: "/",
     },
     {
-      name: "Pricing",
+      name: t("nav_pricing"),
       link: "#pricing",
     },
     {
-      name: "Contact",
+      name: t("nav_contact"),
       link: "#contact",
     },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
     <div className="relative w-full">
+      <div className="tricolor-strip" />
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-              <Loginpage/>
-                
-            
-             
+              <Link href="/sign-in">
+                <Button variant="outline">{t("nav_start_now")}</Button>
+              </Link>
            <ThemeToggle/>
+           <LanguageToggle/>
           </div>
         </NavBody>
 
@@ -52,12 +56,9 @@ export function NavbarDemo() {
         <MobileNav>
           <MobileNavHeader>
             <NavbarLogo />
-            <div className="flex gap-10 ">
-                
-               
+            <div className="flex gap-3 items-center">
                     <ThemeToggle/>
-               
-                
+                    <LanguageToggle/>
                 <MobileNavToggle
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -81,8 +82,9 @@ export function NavbarDemo() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              
-                 <Loginpage/>
+              <Link href="/sign-in" onClick={() => setIsMobileMenuOpen(false)}>
+                <Button variant="outline" className="w-full">{t("nav_start_now")}</Button>
+              </Link>
             </div>
           </MobileNavMenu>
         </MobileNav>

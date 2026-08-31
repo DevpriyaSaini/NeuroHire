@@ -1,8 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+AI interview readiness toolkit for job seekers — mock voice interviews, resume-to-job fit scoring, and soft skills feedback. Built for the e-Shram "AI Enabled Interview Preparation & Assessment" problem statement.
 
 ## Getting Started
 
-First, run the development server:
+Copy `.env.example` to `.env.local` and fill in your own values:
+
+- `MONGO_URI` — MongoDB connection string
+- `NEXT_SECRET` — NextAuth JWT secret
+- `OPENROUTER_API_KEY` — OpenRouter API key (used for question generation, feedback, and resume scoring)
+- `NEXT_PUBLIC_VAPI_API_KEY` — Vapi public key for the voice interview widget
+
+Then run the development server:
 
 ```bash
 npm run dev

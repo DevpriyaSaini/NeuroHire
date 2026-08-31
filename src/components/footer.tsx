@@ -8,10 +8,10 @@ function Footer() {
       <div className="flex flex-col md:flex-row justify-between items-center">
         <div className="mb-4 md:mb-0">
           <p className="text-sm md:text-base">
-            © {new Date().getFullYear()} Your Company Name. All rights reserved.
+            © {new Date().getFullYear()} Neuro-Hire. AI interview readiness toolkit.
           </p>
           <p className="text-xs mt-1 text-gray-300">
-            Building amazing experiences for you
+            Built to support job seekers registered on the National Career Service (NCS)
           </p>
         </div>
         
@@ -54,7 +54,7 @@ function Footer() {
       
       <div className="mt-8 pt-8 border-t border-gray-700 text-center">
         <p className="text-xs text-gray-400">
-          Made with ❤️ by your team | <a href="/privacy" className="hover:text-white hover:underline">Privacy Policy</a> | <a href="/terms" className="hover:text-white hover:underline">Terms of Service</a>
+          Made for the e-Shram AI Interview Preparation & Assessment challenge | <a href="/privacy" className="hover:text-white hover:underline">Privacy Policy</a> | <a href="/terms" className="hover:text-white hover:underline">Terms of Service</a>
         </p>
       </div>
     </div>

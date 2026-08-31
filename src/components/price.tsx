@@ -3,70 +3,57 @@ import { useSession } from "next-auth/react";
 
 export function CardSpotlightDemo() {
   return (
-    <div id="pricing"className="flex flex-col md:flex-row gap-8 justify-center items-center p-4">
-      {/* Free Tier Card */}
+    <div id="pricing" className="flex flex-col md:flex-row gap-8 justify-center items-center p-4">
+      {/* Practice Card */}
       <CardSpotlight className="h-[420px] w-full max-w-md">
         <div className="relative z-20 h-full flex flex-col">
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <p className="text-xl font-bold text-white">Free Tier</p>
-              <span className="px-3 py-1 rounded-full bg-blue-900/50 text-blue-300 text-sm">
-                5 trials
+              <p className="text-xl font-bold text-white">Practice</p>
+              <span className="px-3 py-1 rounded-full bg-green-900/50 text-green-300 text-sm">
+                Free, always
               </span>
             </div>
             <div className="text-neutral-200 mt-4">
-              <p className="mb-4">Basic features to get started:</p>
+              <p className="mb-4">Everything a job seeker needs to prepare:</p>
               <ul className="space-y-3">
-                <Step title="Enter your email address" />
-                <Step title="Create a strong password" />
-                <Step title="Set up two-factor authentication" />
-                <Step title="Create basic interviews" />
+                <Step title="Voice-based mock interview practice" />
+                <Step title="AI-generated behavioral & technical questions" />
+                <Step title="Resume-to-job fit scoring" />
+                <Step title="Soft skills feedback after every session" />
               </ul>
             </div>
           </div>
           <div className="mt-auto">
             <p className="text-neutral-300 text-sm mb-4">
-              Limited access to standard interview templates.
+              Built for job seekers registered on the National Career Service.
             </p>
-            <button  className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 rounded-md text-white font-medium transition-colors">
-              Start Free Trial
-            </button>
           </div>
         </div>
       </CardSpotlight>
 
-      {/* Pro Tier Card - Enhanced with spotlight effect */}
+      {/* Coming Soon Card */}
       <CardSpotlight className="h-[420px] w-full max-w-md border-2 border-yellow-400/30 relative">
         <div className="absolute top-0 right-0 bg-yellow-500 text-black px-3 py-1 text-xs font-bold rounded-bl-md">
-          PRO
+          COMING SOON
         </div>
         <div className="relative z-20 h-full flex flex-col">
           <div className="flex-1">
             <div className="flex items-center justify-between">
-              <p className="text-xl font-bold text-white">Pro Tier</p>
+              <p className="text-xl font-bold text-white">Readiness+</p>
               <span className="px-3 py-1 rounded-full bg-yellow-900/50 text-yellow-300 text-sm">
-                Unlimited
+                Roadmap
               </span>
             </div>
             <div className="text-neutral-200 mt-4">
-              <p className="mb-4">Premium features for professionals:</p>
+              <p className="mb-4">Planned improvements for accessibility and reach:</p>
               <ul className="space-y-3">
-                <Step title="All Free tier features" pro />
-                <Step title="Unlimited interview creation" pro />
-                <Step title="Advanced analytics dashboard" pro />
-                <Step title="Custom branding options" pro />
-                <Step title="Priority customer support" pro />
-                <Step title="AI-powered feedback system" pro />
+                <Step title="Regional language question & feedback support" pro />
+                <Step title="Progress tracking across practice sessions" pro />
+                <Step title="Low-bandwidth / text-only practice mode" pro />
+                <Step title="Direct NCS profile import" pro />
               </ul>
             </div>
-          </div>
-          <div className="mt-auto">
-            <p className="text-neutral-300 text-sm mb-2">
-              Full access to all premium features and templates.
-            </p>
-            <button className="w-full py-2 px-4 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 rounded-md text-black font-bold transition-colors">
-              Upgrade to Pro - $29/mo
-            </button>
           </div>
         </div>
       </CardSpotlight>
@@ -97,7 +84,7 @@ const CheckIcon = () => {
       height="24"
       viewBox="0 0 24 24"
       fill="currentColor"
-      className="h-4 w-4 text-blue-500 mt-1 shrink-0"
+      className="h-4 w-4 text-green-500 mt-1 shrink-0"
     >
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path

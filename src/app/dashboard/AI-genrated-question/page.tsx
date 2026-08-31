@@ -144,7 +144,7 @@ function AIgenque() {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center gap-3 p-6 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-          <Loader2 className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+          <Loader2 className="w-6 h-6 text-orange-600 dark:text-orange-400 animate-spin" />
           <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
             Generating Interview Questions....
           </h2>
@@ -172,7 +172,7 @@ function AIgenque() {
                   {q.question}
                 </h3>
                 <div className="mt-2 flex items-center gap-2">
-                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200">
                     {q.type}
                   </span>
                 </div>
@@ -184,12 +184,12 @@ function AIgenque() {
           <div className="pt-4">
             {simloading ? (
               <div className="flex justify-center">
-                <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+                <Loader2 className="w-8 h-8 text-orange-600 dark:text-orange-400 animate-spin" />
               </div>
             ) : (
               <Button 
                 onClick={saveQuestions}
-                className="w-full md:w-auto px-6 py-3 text-base font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg transition-all"
+                className="w-full md:w-auto px-6 py-3 text-base font-medium bg-gradient-to-r from-orange-500 to-green-600 hover:from-orange-600 hover:to-green-700 text-white shadow-lg transition-all"
               >
                 Save and Continue →
               </Button>
@@ -197,7 +197,7 @@ function AIgenque() {
           </div>
         </div>
       ) : (
-        <InterviewPage interviewId={interviewId} formData={formData} />
+        <InterviewPage interviewId={interviewId} formData={formData} questionCount={questions.length} />
       )}
     </div>
   </div>

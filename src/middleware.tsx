@@ -20,14 +20,13 @@ export async function middleware(request: NextRequest) {
 
 
   if (pathname.startsWith('/dashboard') && !token) {
-    if (!token) {
-      const signInUrl = new URL('/#pricing', request.url);
-      // Add callbackUrl to redirect back after login
-      signInUrl.searchParams.set('callbackUrl', pathname);
-      return NextResponse.redirect(signInUrl);
-    }
-    
-   
+    const signInUrl = new URL('/sign-in', request.url);
+    signInUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(token ? '/dashboard' : '/sign-in', request.url));
   }
 
   return NextResponse.next();

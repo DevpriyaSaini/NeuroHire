@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "sonner";
 import { Suspense } from "react";
+import { LanguageProvider } from "@/lib/i18n";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Neuro-Hire",
-  description: "Hire you based on your brain's activity",
+  description: "AI interview readiness toolkit for NCS jobseekers: voice-based mock interviews, resume-to-job fit scoring, and soft skills feedback.",
 };
 
 export default function RootLayout({
@@ -39,8 +40,10 @@ export default function RootLayout({
             defaultTheme="system"
             enableSystem
           >
-            <Toaster />
-            {children}
+            <LanguageProvider>
+              <Toaster />
+              {children}
+            </LanguageProvider>
           </ThemeProvider>
         </AuthProvider>
         </Suspense>

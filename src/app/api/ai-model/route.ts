@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
 import { generateInterviewQuestions } from '../../../../public/constant';
+import { createChatCompletion } from '@/lib/openrouter';
 
 
 export async function POST(req: Request) {
@@ -21,20 +21,12 @@ export async function POST(req: Request) {
             .replace('{{duration}}', duration || '30 min') 
             .replace('{{type}}', type);
 
-        const openai = new OpenAI({
-            baseURL: 'https://openrouter.ai/api/v1',
-            apiKey: "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",
-        });
-
-        const completion = await openai.chat.completions.create({
-            model: 'google/gemini-2.0-flash-exp:free',
-            messages: [
-                {
-                    role: 'user',
-                    content: final_prompt,
-                },
-            ],
-        });
+        const completion = await createChatCompletion([
+            {
+                role: 'user',
+                content: final_prompt,
+            },
+        ]);
 
         const responseContent = completion.choices[0]?.message?.content;
         if (!responseContent) {

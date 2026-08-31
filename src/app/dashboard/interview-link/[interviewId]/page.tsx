@@ -1,11 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Vapi from "@vapi-ai/web";
 import { Mic, Phone, PhoneCall, Loader2 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { SidebarDemo } from "@/components/sidebar";
+import { useLanguage } from "@/lib/i18n";
 
 interface FormData {
   email: string;
@@ -32,14 +33,21 @@ interface FeedbackData {
       problemSolving?: number;
       experience?: number;
     };
+    softSkills?: {
+      confidence?: number;
+      clarity?: number;
+      engagement?: number;
+    };
     summary?: string;
-    Recommendation?: string;
-    RecommendationMsg?: string;
+    improvementTips?: string[];
+    readiness?: string;
+    readinessMsg?: string;
   };
 }
 
- async function Linkpage({ params }: PageProps) {
+function Linkpage({ params }: PageProps) {
   const { data } = useSession();
+  const { t } = useLanguage();
   const username = data?.user?.username;
   const [formData, setFormData] = useState<FormData>({ email: "", type: "" });
   const [feedback, setFeedback] = useState<FeedbackData | null>(null);
@@ -48,7 +56,7 @@ interface FeedbackData {
   const [loading, setLoading] = useState(true);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
 
-  const { interviewId } = await params;
+  const { interviewId } = use(params);
 
   async function fetchFormData() {
     if (!interviewId) return;
@@ -75,7 +83,12 @@ interface FeedbackData {
 
   React.useEffect(() => {
     if (!vapiRef.current) {
-      vapiRef.current = new Vapi(process.env.NEXT_PUBLIC_VAPI_API_KEY || "21a39db0-4e25-4efc-83c2-d8bf43151758");
+      const vapiPublicKey = process.env.NEXT_PUBLIC_VAPI_API_KEY;
+      if (!vapiPublicKey) {
+        console.error("NEXT_PUBLIC_VAPI_API_KEY is not set");
+        return;
+      }
+      vapiRef.current = new Vapi(vapiPublicKey);
     }
 
     const vapi = vapiRef.current;
@@ -108,21 +121,31 @@ interface FeedbackData {
       }
     };
 
+    const errorListener = (error: any) => {
+      console.error("Vapi error:", error);
+      toast.error(error?.message || "Voice call failed to start. Check your Vapi configuration.");
+      setIsCallActive(false);
+      setLoading(false);
+    };
+
     listenersRef.current = {
       callStart: callStartListener,
       callEnd: callEndListener,
       message: messageListener,
+      error: errorListener,
     };
 
     vapi.on("call-start", listenersRef.current.callStart);
     vapi.on("call-end", listenersRef.current.callEnd);
     vapi.on("message", listenersRef.current.message);
+    vapi.on("error", listenersRef.current.error);
 
     return () => {
       if (vapi && listenersRef.current) {
         vapi.off("call-start", listenersRef.current.callStart);
         vapi.off("call-end", listenersRef.current.callEnd);
         vapi.off("message", listenersRef.current.message);
+        vapi.off("error", listenersRef.current.error);
       }
     };
   }, [conversation]);
@@ -130,7 +153,11 @@ interface FeedbackData {
   async function startCall() {
     try {
       setLoading(true);
-      if (!vapiRef.current) return;
+      if (!vapiRef.current) {
+        toast.error("Voice interview is not configured (missing Vapi key)");
+        setLoading(false);
+        return;
+      }
 
       const { data } = await axios.get(`/api/question?interviewId=${interviewId}`);
       const questionsArray = data?.data?.questions;
@@ -148,7 +175,7 @@ interface FeedbackData {
         firstMessage: `Hi ${username}, ready for your ${formData.type} interview?`,
         model: {
           provider: "openai" as const,
-          model: "gpt-4" as const,
+          model: "gpt-3.5-turbo" as const,
           messages: [
             {
               role: "system" as const,
@@ -161,8 +188,8 @@ interface FeedbackData {
           maxTokens: 300,
         },
         voice: {
-          provider: "playht" as const,
-          voiceId: "jennifer" as const,
+          provider: "11labs" as const,
+          voiceId: "burt" as const,
         },
       };
 
@@ -184,7 +211,9 @@ interface FeedbackData {
     setLoadingFeedback(true);
     try {
       const response = await axios.post('/api/feedback', {
-        conversation: conversationData
+        conversation: conversationData,
+        interviewId,
+        username,
       });
 
       let feedbackData = response.data?.feedback;
@@ -235,7 +264,7 @@ interface FeedbackData {
         </div>
         <div className="flex-1 overflow-auto bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-12 h-12 text-blue-600 dark:text-blue-400 animate-spin" />
+            <Loader2 className="w-12 h-12 text-orange-600 dark:text-orange-400 animate-spin" />
             <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Loading interview details...
             </p>
@@ -258,12 +287,12 @@ interface FeedbackData {
           <div className="max-w-4xl mx-auto">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-700/30 overflow-hidden transition-colors duration-200">
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-900 p-6 text-white">
+              <div className="bg-gradient-to-r from-orange-500 to-green-700 dark:from-orange-700 dark:to-green-900 p-6 text-white">
                 <h1 className="text-2xl sm:text-3xl font-bold">
                   {formData.type || "Technical"} Interview
                 </h1>
                 <p className="mt-2 opacity-90">
-                  Welcome {username || "Candidate"}, let's begin your interview
+                  Welcome {username || "Candidate"}, let&apos;s begin your interview
                 </p>
               </div>
 
@@ -271,9 +300,9 @@ interface FeedbackData {
               <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <Mic className="text-blue-600 dark:text-blue-400" size={24} />
+                    <Mic className="text-orange-600 dark:text-orange-400" size={24} />
                     <span className="font-medium text-gray-800 dark:text-gray-200">
-                      {isCallActive ? "Interview in progress" : "Ready to start"}
+                      {isCallActive ? t("interview_in_progress") : t("interview_ready")}
                     </span>
                   </div>
                   <div className="flex gap-3">
@@ -291,7 +320,7 @@ interface FeedbackData {
                       ) : (
                         <PhoneCall size={18} />
                       )}
-                      <span>Start</span>
+                      <span>{t("interview_start")}</span>
                     </button>
                     <button
                       onClick={stopCall}
@@ -303,7 +332,7 @@ interface FeedbackData {
                       }`}
                     >
                       <Phone size={18} />
-                      <span>End</span>
+                      <span>{t("interview_end")}</span>
                     </button>
                   </div>
                 </div>
@@ -315,7 +344,7 @@ interface FeedbackData {
                 <div className="lg:border-r lg:pr-6 border-gray-200 dark:border-gray-700">
                   <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
                     <svg
-                      className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                      className="w-5 h-5 text-orange-600 dark:text-orange-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -327,7 +356,7 @@ interface FeedbackData {
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    Conversation Transcript
+                    {t("interview_transcript")}
                   </h2>
                   {conversation.length > 0 ? (
                     <div className="space-y-4 max-h-[32rem] overflow-y-auto pr-2 custom-scrollbar">
@@ -336,14 +365,14 @@ interface FeedbackData {
                           key={index}
                           className={`p-4 rounded-lg ${
                             msg.role === 'user'
-                              ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800'
+                              ? 'bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800'
                               : 'bg-gray-50 dark:bg-gray-700/30 border border-gray-100 dark:border-gray-600'
                           }`}
                         >
                           <div className="flex justify-between items-start">
                             <span className={`font-medium capitalize ${
                               msg.role === 'user' 
-                                ? 'text-blue-700 dark:text-blue-300'
+                                ? 'text-orange-700 dark:text-orange-300'
                                 : 'text-gray-700 dark:text-gray-300'
                             }`}>
                               {msg.role === 'user' ? 'You' : 'Interviewer'}
@@ -373,7 +402,7 @@ interface FeedbackData {
                 <div>
                   <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
                     <svg
-                      className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                      className="w-5 h-5 text-orange-600 dark:text-orange-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -385,11 +414,11 @@ interface FeedbackData {
                         d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                       />
                     </svg>
-                    Interview Feedback
+                    {t("interview_feedback")}
                   </h2>
                   {loadingFeedback ? (
                     <div className="flex flex-col items-center justify-center h-64">
-                      <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin" />
+                      <Loader2 className="w-8 h-8 text-orange-600 dark:text-orange-400 animate-spin" />
                       <p className="mt-3 text-gray-600 dark:text-gray-400">Analyzing your interview...</p>
                     </div>
                   ) : feedback ? (
@@ -411,7 +440,34 @@ interface FeedbackData {
                                 </div>
                                 <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                                   <div
-                                    className="bg-blue-600 h-2 rounded-full"
+                                    className="bg-orange-500 h-2 rounded-full"
+                                    style={{ width: `${(value / 10) * 100}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Soft Skills */}
+                      {feedback.feedback?.softSkills && (
+                        <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                          <h3 className="font-medium mb-3 text-gray-800 dark:text-white">{t("interview_soft_skills")}</h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {Object.entries(feedback.feedback.softSkills).map(([key, value]) => (
+                              <div key={key} className="space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="capitalize text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {key.replace(/([A-Z])/g, ' $1').trim()}
+                                  </span>
+                                  <span className="text-sm font-medium text-gray-800 dark:text-white">
+                                    {value}/10
+                                  </span>
+                                </div>
+                                <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                                  <div
+                                    className="bg-green-600 h-2 rounded-full"
                                     style={{ width: `${(value / 10) * 100}%` }}
                                   ></div>
                                 </div>
@@ -423,17 +479,29 @@ interface FeedbackData {
 
                       {/* Summary */}
                       {feedback.feedback?.summary && (
-                        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800">
-                          <h3 className="font-medium mb-2 text-blue-800 dark:text-blue-200">Summary</h3>
+                        <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-100 dark:border-orange-800">
+                          <h3 className="font-medium mb-2 text-orange-800 dark:text-orange-200">Summary</h3>
                           <p className="text-gray-700 dark:text-gray-300">{feedback.feedback.summary}</p>
                         </div>
                       )}
 
-                      {/* Recommendation */}
-                      {feedback.feedback?.Recommendation && (
+                      {/* Improvement Tips */}
+                      {feedback.feedback?.improvementTips && feedback.feedback.improvementTips.length > 0 && (
+                        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-100 dark:border-green-800">
+                          <h3 className="font-medium mb-2 text-green-800 dark:text-green-200">{t("interview_tips")}</h3>
+                          <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                            {feedback.feedback.improvementTips.map((tip, i) => (
+                              <li key={i}>{tip}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Readiness Verdict */}
+                      {feedback.feedback?.readiness && (
                         <div
                           className={`rounded-lg p-4 border ${
-                            feedback.feedback.Recommendation === "Recommended"
+                            feedback.feedback.readiness === "Ready"
                               ? "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-800"
                               : "bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800"
                           }`}
@@ -441,12 +509,12 @@ interface FeedbackData {
                           <div className="flex items-start gap-3">
                             <div
                               className={`p-1 rounded-full ${
-                                feedback.feedback.Recommendation === "Recommended"
+                                feedback.feedback.readiness === "Ready"
                                   ? "bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-300"
                                   : "bg-amber-100 dark:bg-amber-800 text-amber-600 dark:text-amber-300"
                               }`}
                             >
-                              {feedback.feedback.Recommendation === "Recommended" ? (
+                              {feedback.feedback.readiness === "Ready" ? (
                                 <svg
                                   className="w-5 h-5"
                                   fill="currentColor"
@@ -474,11 +542,11 @@ interface FeedbackData {
                             </div>
                             <div>
                               <h3 className="font-medium text-gray-800 dark:text-white">
-                                {feedback.feedback.Recommendation}
+                                {feedback.feedback.readiness === "Ready" ? "You&apos;re ready for the real thing!" : "Keep Practicing"}
                               </h3>
-                              {feedback.feedback.RecommendationMsg && (
+                              {feedback.feedback.readinessMsg && (
                                 <p className="text-sm mt-1 text-gray-700 dark:text-gray-300">
-                                  {feedback.feedback.RecommendationMsg}
+                                  {feedback.feedback.readinessMsg}
                                 </p>
                               )}
                             </div>

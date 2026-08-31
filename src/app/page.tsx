@@ -1,11 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatedTestimonialsDemo } from "@/components/cards";
 import Footer from "@/components/footer";
-import AuthDialog from "@/components/loginpop-up";
 import { NavbarDemo } from "@/components/navbar";
 import { CardSpotlightDemo } from "@/components/price";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { Button } from "@/components/ui/button";
 
 
 export default function Home() {
@@ -24,7 +25,11 @@ export default function Home() {
             {/* Foreground content */}
             <div className="w-full max-w-7xl mx-auto flex flex-col items-center justify-center z-10 gap-12">
               <AnimatedTestimonialsDemo  />
-              <AuthDialog />
+              <Link href="/sign-in">
+                <Button size="lg" className="bg-gradient-to-r from-[var(--saffron)] to-[var(--india-green)] text-white hover:opacity-90">
+                  Start Practicing Free
+                </Button>
+              </Link>
             </div>
           </div>
 

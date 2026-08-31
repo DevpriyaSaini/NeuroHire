@@ -4,6 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-saffron: var(--saffron);
+  --color-india-green: var(--india-green);
+  --color-navy-chakra: var(--navy-chakra);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -69,24 +72,28 @@ html {
 
 :root {
   --radius: 0.625rem;
+  /* Indian flag palette */
+  --saffron: #FF9933;
+  --india-green: #138808;
+  --navy-chakra: #0B1F4E;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: var(--saffron);
+  --primary-foreground: #ffffff;
+  --secondary: #E6F4E6;
+  --secondary-foreground: var(--india-green);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: var(--india-green);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--saffron);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -103,24 +110,24 @@ html {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: var(--navy-chakra);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: #12275E;
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: #12275E;
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --primary: var(--saffron);
+  --primary-foreground: #1a1200;
+  --secondary: #163a1a;
+  --secondary-foreground: #8fe08f;
+  --muted: #17285c;
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent: var(--india-green);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: var(--saffron);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -143,6 +150,20 @@ html {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.tricolor-strip {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(
+    to right,
+    var(--saffron) 0%,
+    var(--saffron) 33.33%,
+    #ffffff 33.33%,
+    #ffffff 66.66%,
+    var(--india-green) 66.66%,
+    var(--india-green) 100%
+  );
 }
 
 @variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));

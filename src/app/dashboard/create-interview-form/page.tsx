@@ -14,8 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { toast } from "sonner";
-import { Connectiondb } from "@/lib/dbconnect";
 import { SidebarDemo } from "@/components/sidebar";
+import { useLanguage } from "@/lib/i18n";
 
 interface InterviewForm {
   jobPosition: string;
@@ -26,6 +26,7 @@ interface InterviewForm {
 
 function Formpage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<InterviewForm>({
     jobPosition: "",
     jobDescription: "",
@@ -49,6 +50,14 @@ function Formpage() {
       toast.error("Please fill all required fields (marked with *)");
       return;
     }
+    if (formData.jobPosition.trim().length < 3) {
+      toast.error("Job position must be at least 3 characters");
+      return;
+    }
+    if (formData.jobDescription.trim().length < 10) {
+      toast.error("Job description must be at least 10 characters");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -70,7 +79,10 @@ function Formpage() {
       }
     } catch (error) {
       console.error("Submission error:", error);
-      toast.error("Failed to save interview details");
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.error || "Failed to save interview details"
+        : "Failed to save interview details";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -100,7 +112,7 @@ function Formpage() {
     <div className="max-w-2xl mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700">
         {/* Header */}
-        <div className="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-700">
+        <div className="p-6 sm:p-8 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-orange-50 to-green-50 dark:from-gray-700 dark:to-gray-700">
           <div className="flex items-center">
             <ArrowLeft
               className="h-6 w-6 dark:text-white cursor-pointer mr-4"
@@ -108,10 +120,10 @@ function Formpage() {
             />
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
-                Create New Interview
+                {t("form_title")}
               </h1>
               <p className="mt-1 text-gray-600 dark:text-gray-300">
-                Configure your interview settings and generate tailored questions
+                {t("form_subtitle")}
               </p>
             </div>
           </div>
@@ -122,7 +134,7 @@ function Formpage() {
           {/* Job Position */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Job position <span className="text-red-500">*</span>
+              {t("form_job_position")} <span className="text-red-500">*</span>
             </label>
             <Input
               name="jobPosition"
@@ -137,7 +149,7 @@ function Formpage() {
           {/* Job Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Job description <span className="text-red-500">*</span>
+              {t("form_job_description")} <span className="text-red-500">*</span>
             </label>
             <Textarea
               name="jobDescription"
@@ -152,7 +164,7 @@ function Formpage() {
           {/* Interview Duration */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Interview duration
+              {t("form_duration")}
             </label>
             <Select
               value={formData.duration}
@@ -180,7 +192,7 @@ function Formpage() {
           {/* Interview Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Interview focus areas <span className="text-red-500">*</span>
+              {t("form_focus_areas")} <span className="text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {interviewTypes.map((type) => (
@@ -190,8 +202,8 @@ function Formpage() {
                   onClick={() => handleTypeSelect(type.value)}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     formData.type === type.value
-                      ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/30"
-                      : "border-gray-200 hover:border-blue-300 dark:border-gray-600 dark:hover:border-blue-500"
+                      ? "border-orange-500 bg-orange-50 dark:border-orange-400 dark:bg-orange-900/30"
+                      : "border-gray-200 hover:border-green-300 dark:border-gray-600 dark:hover:border-green-500"
                   }`}
                 >
                   <div className="flex flex-col items-center">
@@ -212,7 +224,7 @@ function Formpage() {
           <div className="pt-2">
             <Button
               size="lg"
-              className="w-full py-4 text-md font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
+              className="w-full py-4 text-md font-medium bg-gradient-to-r from-orange-500 to-green-600 hover:from-orange-600 hover:to-green-700 shadow-lg"
               onClick={handleSubmit}
               disabled={loading}
             >
@@ -223,7 +235,7 @@ function Formpage() {
                 </span>
               ) : (
                 <>
-                  Generate Questions
+                  {t("form_generate")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </>
               )}

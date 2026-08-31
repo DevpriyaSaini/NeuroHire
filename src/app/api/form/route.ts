@@ -33,6 +33,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, interviewId: newForm.interviewId }, { status: 200 });
     } catch (mongooseError: any) {
       console.error("Mongoose Error:", mongooseError);
+      if (mongooseError.name === "ValidationError") {
+        const firstError = Object.values(mongooseError.errors)[0] as { message: string };
+        return NextResponse.json({ error: firstError.message }, { status: 400 });
+      }
       return NextResponse.json({ error: mongooseError.message }, { status: 500 });
     }
   } catch (error: any) {

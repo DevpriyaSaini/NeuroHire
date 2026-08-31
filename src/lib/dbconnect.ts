@@ -23,9 +23,7 @@ export async function Connectiondb() {
             maxPoolSize:10
         }
 
-     
-
-       mongoose.connect(MONGO_URI as string,opts).then(()=>mongoose.connection)
+        cached.promise = mongoose.connect(MONGO_URI as string,opts).then(()=>mongoose.connection)
     }
     try {
         cached.conn=await cached.promise

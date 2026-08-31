@@ -105,7 +105,7 @@ export function MobileSidebar({
         className="h-10 flex items-center justify-between px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
       >
         <IconMenu2
-          className="text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+          className="text-gray-800 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer"
           onClick={() => setOpen(!open)}
         />
       </div>
@@ -123,7 +123,7 @@ export function MobileSidebar({
             )}
           >
             <div
-              className="absolute top-10 right-10 text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+              className="absolute top-10 right-10 text-gray-800 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer"
               onClick={() => setOpen(false)}
             >
               <IconX />
@@ -154,7 +154,7 @@ export const SidebarLink = ({
       )}
       {...props}
     >
-      <span className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-blue-600 dark:group-hover/sidebar:text-blue-400">
+      <span className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-orange-600 dark:group-hover/sidebar:text-orange-400">
         {link.icon}
       </span>
       <motion.span
@@ -162,7 +162,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-blue-600 dark:group-hover/sidebar:text-blue-400 text-sm transition-all duration-150 whitespace-pre inline-block"
+        className="text-gray-700 dark:text-gray-300 group-hover/sidebar:text-orange-600 dark:group-hover/sidebar:text-orange-400 text-sm transition-all duration-150 whitespace-pre inline-block"
       >
         {link.label}
       </motion.span>
